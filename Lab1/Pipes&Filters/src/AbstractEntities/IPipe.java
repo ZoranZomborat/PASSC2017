@@ -1,7 +1,7 @@
 package AbstractEntities;
 
 public interface IPipe extends Runnable {
-	void attachWorker(IFilter worker);
+	void attachWorker(ISink worker);
 	void sendOrder(IProduct chair);
 	void stop(boolean recursive);
 }

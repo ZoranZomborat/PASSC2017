@@ -36,6 +36,11 @@ public class ChairShipper implements IWorker,Runnable {
 	public void supervise(IBlackBoard bb) {
 		
 	}
+	
+	public void stop()
+	{
+		shipperActive=false;
+	}
 
 	public void run() {
 		while(shipperActive)

@@ -10,10 +10,11 @@ public class DataSource implements ISource,Runnable {
 	private boolean sourceActive;
 	private Thread thread;
 	private int count=0;
-	private int max=3;
+	private int max=1;
 	
-	public DataSource()
+	public DataSource(int productCount)
 	{
+		max = productCount;
 		thread = new Thread(this);
 		sourceActive=true;
 		thread.start();
@@ -58,12 +59,6 @@ public class DataSource implements ISource,Runnable {
 			if(count==max)
 				sourceActive=false;
 							
-		}
-		
-		try {
-			thread.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
 		
 	}

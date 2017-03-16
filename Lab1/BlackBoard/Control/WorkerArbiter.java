@@ -26,6 +26,11 @@ public class WorkerArbiter implements IArbiter,Runnable{
 		_thread.start();
 	}
 
+	public void stop()
+	{
+		arbiterActive=false;
+	}
+	
 	public void run() {
 		while(arbiterActive)
 		{

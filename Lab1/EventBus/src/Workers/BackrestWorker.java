@@ -6,12 +6,11 @@ import com.google.common.eventbus.Subscribe;
 import AbstractEntities.IComponent;
 import AbstractEntities.IEvent;
 import AbstractEntities.IProduct;
-import AbstractEntities.IWorker;
 import AbstractEntities.EventFilters.IEventFilterB;
 import Components.BackrestComponent;
 import Events.ChairEventDoneB;
 
-public class BackrestWorker implements IWorker {
+public class BackrestWorker extends Worker implements Runnable {
 
 	private int _time;
 	private IProduct _product;
@@ -19,6 +18,7 @@ public class BackrestWorker implements IWorker {
 	private IEvent _event;				//event to publish
 	private EventBus _eventBus;
 
+	private Thread _thread;
 	private boolean _busy=false;
 	
 	public BackrestWorker(int time,EventBus eb)
@@ -26,8 +26,10 @@ public class BackrestWorker implements IWorker {
 		_time=time;
 		_eventBus=eb;
 		_component=BackrestComponent.instance();
-		_event=new ChairEventDoneB();
 		_eventBus.register(this);
+		_thread=new Thread(this);
+		workerActive=true;
+		_thread.start();
 	}
 	
 	public boolean validateProduct(IProduct p)
@@ -38,28 +40,52 @@ public class BackrestWorker implements IWorker {
 	}
 	
 	@Subscribe
-	public void chairEventHandler(IEventFilterB e) {
+	public synchronized void chairEventHandler(IEventFilterB e) {
+		IProduct p = e.getProduct();
 		
-		_product = e.getProduct();
-		
-		if (!_busy && !e.isTaken() && validateProduct(_product)) {
-			_busy=true;
+		if (!_busy && !e.isTaken() && validateProduct(p)) {
+			_product=p;
 			e.takeEvent();
-			
+			_busy=true;
+		}
+	}
+
+	@Override
+	public void run() 
+	{
+		while (workerActive) 
+		{
+			if (_busy) 
+			{
+				try {
+					Thread.sleep(_time);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				_product.addComponent(_component);
+				_event=new ChairEventDoneB();
+				_event.attachProduct(_product);
+				_eventBus.post(_event);
+				while(!_event.isTaken()){
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+					_eventBus.post(_event);
+				}
+				System.out.println("Chair with B posted!");
+				_busy=false;
+			}
 			
 			try {
-				Thread.sleep(_time);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-			_product.addComponent(_component);
-			_event.attachProduct(_product);
-			_eventBus.post(_event);
-			System.out.println("Chair with B posted!");
-			_busy=false;
-			
 		}
 		
-	}	
+	}
+
 	
 }

@@ -1,3 +1,4 @@
+package Products;
 import java.util.ArrayList;
 
 import AbstractEntities.IComponent;
@@ -5,8 +6,12 @@ import AbstractEntities.IProduct;
 
 public class Product implements IProduct{
 
-	private ArrayList<IComponent> _components=new ArrayList<IComponent>();
+	private ArrayList<IComponent> _components=null;
 
+	public Product() {
+		_components=new ArrayList<IComponent>();
+	}
+	
 	public void addComponent(IComponent component) {
 		_components.add(component);
 	}

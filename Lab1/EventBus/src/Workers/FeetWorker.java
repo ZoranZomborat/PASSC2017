@@ -8,13 +8,14 @@ import AbstractEntities.EventFilters.*;
 import Components.*;
 import Events.*;
 
-public class FeetWorker implements IWorker {
+public class FeetWorker extends Worker implements Runnable {
 	private int _time;
 	private IProduct _product;
 	private IComponent _component; 		//component to be added
 	private IEvent _event;				//event to publish
 	private EventBus _eventBus;
 
+	private Thread _thread;
 	private boolean _busy=false;
 	
 	public FeetWorker(int time,EventBus eb)
@@ -22,8 +23,10 @@ public class FeetWorker implements IWorker {
 		_time=time;
 		_eventBus=eb;
 		_component=FeetComponent.instance();
-		_event=new ChairEventDoneF();
 		_eventBus.register(this);
+		_thread=new Thread(this);
+		workerActive=true;
+		_thread.start();
 	}
 	
 	public boolean validateProduct(IProduct p)
@@ -34,26 +37,51 @@ public class FeetWorker implements IWorker {
 	}
 	
 	@Subscribe
-	public void chairEventHandler(IEventFilterF e) {
+	public synchronized void chairEventHandler(IEventFilterF e) {
 		
-		_product = e.getProduct();
+		IProduct p= e.getProduct();
 		
-		if (!_busy && !e.isTaken() && validateProduct(_product)) {
-			_busy=true;
+		if (!_busy && !e.isTaken() && validateProduct(p)) {
 			e.takeEvent();
-			
+			_product=p;
+			_busy=true;
+		}
+		
+	}
+
+	public void run() {
+
+		while (workerActive) {
+
+			if (_busy) {
+				
+				try {
+					Thread.sleep(_time);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				
+				_product.addComponent(_component);
+				_event = new ChairEventDoneF();
+				_event.attachProduct(_product);
+				_eventBus.post(_event);
+				while(!_event.isTaken()){
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+					_eventBus.post(_event);
+				}
+				System.out.println("Chair with F posted!");
+				_busy = false;
+			}
 			
 			try {
-				Thread.sleep(_time);
+				Thread.sleep(100);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
-			_product.addComponent(_component);
-			_event.attachProduct(_product);
-			_eventBus.post(_event);
-			System.out.println("Chair with F posted!");
-			_busy=false;
-			
 		}
 		
 	}	

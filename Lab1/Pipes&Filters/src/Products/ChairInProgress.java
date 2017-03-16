@@ -1,22 +1,26 @@
 package Products;
 
+import java.util.ArrayList;
+
+import AbstractEntities.IComponent;
 import AbstractEntities.IProduct;
 
 public class ChairInProgress implements IProduct {
 
-	public int completionState=0;
-
+	protected ArrayList<IComponent> _components=null;
+	
 	public ChairInProgress() {
+		_components=new ArrayList<IComponent>();
 	}
 	
-	public int GetState() {
-		return 0;
+	public void addComponent(IComponent c)
+	{
+		_components.add(c);
 	}
 	
 	public ChairInProgress clone()
 	{
 		ChairInProgress copy = new ChairInProgress();
-		copy.completionState=this.completionState;
 		return copy;
 	}
 

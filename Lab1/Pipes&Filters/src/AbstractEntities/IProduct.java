@@ -1,5 +1,5 @@
 package AbstractEntities;
 
 public interface IProduct {
-	public int GetState();
+	public void addComponent(IComponent c);
 }

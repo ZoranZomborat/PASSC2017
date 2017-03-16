@@ -7,23 +7,19 @@ public class Worker implements IWorker, Runnable {
 	private boolean _busy;
 	protected long _time;
 	private IPipe _pipe;
-	
-	private ChairInProgress _chair;
+	private IComponent _component;
+	private IProduct _product;
 	
 	private boolean workerActive;
 	private Thread thread;
 
-	public Worker(long time) 
+	public Worker(long time,IComponent c) 
 	{
 		_time=time;
+		_component=c;
 		workerActive=true;
 		thread =new Thread(this);
 		thread.start();
-	}
-	
-	public Worker(IPipe pipe) 
-	{
-		_pipe=pipe;
 	}
 	
 	public void setTime(long time)
@@ -38,7 +34,7 @@ public class Worker implements IWorker, Runnable {
 
 	public void doWork(IProduct product)
 	{
-		_chair=(ChairInProgress)(product);
+		_product=product;
 		_busy=true;
 	}
 	
@@ -64,9 +60,9 @@ public class Worker implements IWorker, Runnable {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				_chair.completionState++;
+				_product.addComponent(_component);;
 				System.out.println("Worker "+ _time +" done!");
-				_pipe.sendOrder(_chair);
+				_pipe.sendOrder(_product);
 				_busy=false;
 			}
 			
@@ -77,11 +73,6 @@ public class Worker implements IWorker, Runnable {
 			}
 		}
 		
-		try {
-			thread.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 
 

@@ -5,5 +5,6 @@ public interface IWorker {
 	public void execAction(IProduct product);
 	public void supervise(IBlackBoard bb);
 	public boolean isBusy();
+	public void stop();
 
 }

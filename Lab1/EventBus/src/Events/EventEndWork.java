@@ -1,19 +1,9 @@
+package Events;
+
 import AbstractEntities.IEvent;
 import AbstractEntities.IProduct;
 
-public class ChangeEvent implements IEvent {
-	
-	private int _i;
-	private boolean _taken=false;
-	public ChangeEvent(int i) {
-		_i=i;
-	}
-
-	public int getChange()
-	{
-		return _i;
-		
-	}
+public class EventEndWork implements IEvent {
 
 	@Override
 	public IProduct getProduct() {
@@ -23,18 +13,20 @@ public class ChangeEvent implements IEvent {
 
 	@Override
 	public boolean isTaken() {
-		return _taken;
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
 	public void takeEvent() {
-		_taken=true;
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void attachProduct(IProduct p) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 }

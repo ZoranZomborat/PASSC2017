@@ -1,6 +1,8 @@
 package Events;
 
-public class ChairEventDoneP extends ChairEvent {
+import AbstractEntities.EventFilters.IEventFilterShip;
+
+public class ChairEventDoneP extends ChairEvent implements IEventFilterShip {
 
 	public ChairEventDoneP() {
 	}

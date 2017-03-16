@@ -22,16 +22,16 @@ public class ChairPipe implements IPipe ,Runnable{
 		thread.start();
 	}
 	
-	public ChairPipe(IFilter worker) {
-		_nextWorker=(ISink)worker;
+	public ChairPipe(ISink worker) {
+		_nextWorker = worker;
 		pipeActive = true;
-		thread =new Thread(this);
+		thread = new Thread(this);
 		thread.start();
 	}
 	
-	public void attachWorker(IFilter worker)
+	public void attachWorker(ISink worker)
 	{
-		_nextWorker=(IWorker)worker;
+		_nextWorker=worker;
 	}
 
 	public void sendOrder(IProduct product) {
@@ -65,18 +65,10 @@ public class ChairPipe implements IPipe ,Runnable{
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		
-		try {
-			thread.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+				
 	}
 
 

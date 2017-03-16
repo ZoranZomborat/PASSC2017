@@ -1,7 +1,8 @@
+import java.util.ArrayList;
 
-public class ChairWorker implements IWorker, Runnable {
+public abstract class ChairWorker implements IWorker, Runnable {
 
-	private int _threshold;
+	private IComponent _component;
 	private long _time;
 	private IBlackBoard _chaiStorage;
 	
@@ -11,9 +12,12 @@ public class ChairWorker implements IWorker, Runnable {
 	private boolean workerActive=false;
 	private boolean _busy=false;
 	
-	public ChairWorker(int threshold,long time)
+	protected ArrayList<IComponent> forbidden;
+	protected ArrayList<IComponent> required;
+	
+	public ChairWorker(IComponent component,long time)
 	{
-		_threshold = threshold;
+		_component = component;
 		_time = time;
 		_thread=new Thread(this);
 		workerActive=true;
@@ -21,9 +25,17 @@ public class ChairWorker implements IWorker, Runnable {
 	}
 	
 	public boolean execCondition(IProduct product) {
-		if(product.getCompletionState()==_threshold)
-			return true;
-		return false;
+		for(IComponent c : forbidden)
+		{
+			if(product.containsComponent(c))
+				return false;
+		}
+		for(IComponent c : required)
+		{
+			if(!product.containsComponent(c))
+				return false;
+		}
+		return true;
 	}
 
 	public void execAction(IProduct product) {
@@ -39,6 +51,11 @@ public class ChairWorker implements IWorker, Runnable {
 	public void supervise(IBlackBoard bb) {
 		_chaiStorage=bb;	
 	}
+	
+	public void stop()
+	{
+		workerActive=false;
+	}
 
 	public void run() {
 		while(workerActive)
@@ -46,7 +63,8 @@ public class ChairWorker implements IWorker, Runnable {
 			if(_busy)
 			{				
 				_chairInUse.increaseCompletionState(1);
-				System.out.printf("Product id %d state %d!\n", _chairInUse.getId(), _chairInUse.getCompletionState());
+				_chairInUse.addComponent(_component);
+				System.out.printf("Product id %d state %s!\n", _chairInUse.getId(),_component);
 				try {
 					Thread.sleep(_time);
 				} catch (InterruptedException e) {

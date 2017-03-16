@@ -1,13 +1,19 @@
 package Workers;
 
+import java.util.ArrayList;
+
 import AbstractEntities.*;
 
 
 public class Sink implements ISink , Runnable {
 	
-	private int newProductDone;
+	private int productCount = 0;
 	private Thread thread;
 	private boolean sinkActive;
+	private boolean _busy;
+	
+	private ArrayList<IProduct> _products=new ArrayList<IProduct>() ;
+
 	
 	public Sink()
 	{
@@ -16,12 +22,22 @@ public class Sink implements ISink , Runnable {
 		thread.start();
 	}
 
-	public void doWork(IProduct product) {
-		newProductDone++;
+	public synchronized void doWork(IProduct product) {
+		_products.add(product);
+		_busy=true;
 	}
 
+	public synchronized IProduct getProduct()
+	{
+		if(_products!=null&&!_products.isEmpty()){
+			productCount--;
+			return _products.remove(0);
+		}
+		return null;
+	}
+	
 	public boolean isBusy() {
-		return false;
+		return _busy;
 	}
 	
 	public void stop(boolean recursive)
@@ -33,12 +49,14 @@ public class Sink implements ISink , Runnable {
 		
 		while(sinkActive)
 		{
-			if(newProductDone>0)
-			{
-				System.out.println("Product done!");
-				newProductDone--;
+			if (_busy) {
+				if (_products.size() > productCount) {
+					productCount++;
+					System.out.println("Product done!");
+				}
+				_busy = false;
 			}
-			
+
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
@@ -46,11 +64,6 @@ public class Sink implements ISink , Runnable {
 			};
 		}
 		
-		try {
-			thread.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 
 }
