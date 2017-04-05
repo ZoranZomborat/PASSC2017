@@ -12,6 +12,16 @@ public class JsonFormatter implements IFormatter {
 	public String endTag() {
 		return new String(identation() + "}");
 	}
+	
+	@Override
+	public String beginArray() {
+		return new String("[");
+	}
+
+	@Override
+	public String endArray() {
+		return new String(identation() + "]");
+	}
 
 	@Override
 	public String id(String val) {
@@ -50,4 +60,5 @@ public class JsonFormatter implements IFormatter {
 	public String arrayValue(String val) {
 		return new String(identation() + "\"" + val + "\"");
 	}
+
 }

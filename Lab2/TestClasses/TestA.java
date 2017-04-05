@@ -1,11 +1,17 @@
-import java.util.ArrayList;
+
 
 public class TestA implements Runnable{
-	public String aPublicString;
-	private String aPrivateString;
-	public String []args;
-	public ArrayList<String> argv;
-
+	public String aPublicString = new String("public bla bla");
+	private String aPrivateString = new String("private bla bla");
+//	private String aPrivateString2 = new String("private2 bla bla");
+//	protected String aProtectedString2 = new String("protected bla bla");
+	public TestC tc = new TestC();
+	public int [] array= new int[3];
+	
+	public TestA(){
+		
+	}
+	
 	public TestA(String aString) {
 		Op1(aString);
 	}
@@ -25,7 +31,10 @@ public class TestA implements Runnable{
 	}
 
 	public void Op3() {
-		// …
+		for (int i=0; i<3; i++)
+		{
+			array[i]=i;
+		}
 	}
 
 	@Override
